@@ -7,6 +7,7 @@
 
 //Variables
 var matriz = [];
+var exit = false;
 // Crear matriz vacía   Create an empty matrix
 for (var i = 0; i < 4; i++) {
     matriz[i] = [];
@@ -14,27 +15,49 @@ for (var i = 0; i < 4; i++) {
       matriz[i][j] = 0;
     }
   }
-//Part Common
+//Part in Common
 crearMatriz();
 representar();
 //Part Jorge
+//look for index.html file
 
 //Part Naor
-
-function crearMatriz() {
-    // Generar posiciones aleatorias    Generate random positions 
-    var posicion1 = [Math.floor(Math.random() * 4), Math.floor(Math.random() * 4)];
-    var posicion2 = [Math.floor(Math.random() * 4), Math.floor(Math.random() * 4)];
-
-    // Asegurarse de que las posiciones sean diferentes     Be sure the positions are diferents
-    while (posicion1[0] === posicion2[0] && posicion1[1] === posicion2[1]) {
-        posicion2 = [Math.floor(Math.random() * 4), Math.floor(Math.random() * 4)];
+function crearMatriz(){
+    let num1 = Math.floor(Math.random() * matriz.length),num2 = Math.floor(Math.random() * matriz[0].length);
+    for(let i = 0;i<2;i++){
+        let codigoError = 0;
+        while(matriz[num1][num2]!=0){
+            if(codigoError == (matriz.length*matriz[0].length)){
+                console.log("Codigo de error ejecutado");
+                return 0;   
+            }else{
+                num1 = Math.floor(Math.random() * matriz.length);
+                num2 = Math.floor(Math.random() * matriz.length);
+                codigoError++;
+            }
+        }
+        matriz[num1][num2] = 2;
     }
-
-    // Asignar el número "2" a las posiciones aleatorias    Put the numbers 2 on random positions
-    matriz[posicion1[0]][posicion1[1]] = 2;
-    matriz[posicion2[0]][posicion2[1]] = 2;
-} 
+}
+function generarCelda(event){
+    if(!exit && (event.keyCode == 87 || event.keyCode == 83 ||event.keyCode == 68 ||event.keyCode == 65) ){
+        let num1 = Math.floor(Math.random() * matriz.length),num2 = Math.floor(Math.random() * matriz[0].length);
+        let codigoError = 0;
+        while(matriz[num1][num2]!=0){
+            if(codigoError == (matriz.length*matriz[0].length)){
+                console.log("Codigo de error ejecutado");
+                return 0;   
+            }else{
+                num1 = Math.floor(Math.random() * matriz.length);
+                num2 = Math.floor(Math.random() * matriz.length);
+                codigoError++;
+            }
+        }
+        matriz[num1][num2] = 2;
+    }
+}
+// Ejemplo de uso
+  
 
 //Part Juanjo
 //represent the matrix on the display
@@ -48,6 +71,7 @@ function representar(){
                 caja.innerText = matriz[i][j];
             }
             
+            caja.style.fontSize = "100px";
             if(matriz[i][j] == 0){
                 caja.style.backgroundColor = "rgb(163,160,160)";
                 caja.style.color = "rgb(163,160,160)";
@@ -80,49 +104,74 @@ function representar(){
 
 function comprobarLaterales(event){
     //Movimiento 
-    if(event.keyCode === 87 ){  //W     necesita arreglo
-        for(let i = 0;i<matriz.length;i++){ 
-            for(let j = 0;j<matriz[i].length;j++){
-                if(i+1<matriz.length && (matriz[i][j]==matriz[i+1][j] || matriz[i][j] == 0)){
-                    matriz[i][j] += matriz[i+1][j];
-                    matriz[i+1][j] = 0;
+    if(!exit){
+        if(event.keyCode === 87 ){  //W  key
+            for(let c = 0;c<matriz.length;c++){
+                for(let i = 0;i<matriz.length;i++){ 
+                    for(let j = 0;j<matriz[i].length;j++){
+                        if(i+1<matriz.length && (matriz[i][j]==matriz[i+1][j] || matriz[i][j] == 0)){
+                            matriz[i][j] += matriz[i+1][j];
+                            matriz[i+1][j] = 0;  
+                            if(matriz[i][j] >= 2048){
+                                exit = true;
+                            }  
+                        }
+                    }
                 }
             }
-        }
-    }else if(event.keyCode === 83 ){ //S
-        for(let i = 0;i<matriz.length;i++){
-            for(let j = 0;j<matriz[i].length;j++){
-                if(i-1>=0 && ((matriz[i][j] == matriz[i-1][j] || matriz[i][j] == 0))){
-                    matriz[i][j] += matriz[i-1][j];
-                    matriz[i-1][j] = 0;
+        }else if(event.keyCode === 83 ){ //S key
+            for(let c = 0;c<matriz.length;c++){
+                for(let i = 0;i<matriz.length;i++){
+                    for(let j = 0;j<matriz[i].length;j++){
+                        if(i-1>=0 && ((matriz[i][j] == matriz[i-1][j] || matriz[i][j] == 0))){
+                            matriz[i][j] += matriz[i-1][j];
+                            matriz[i-1][j] = 0;
+                            if(matriz[i][j] >= 2048){
+                                exit = true;
+                            }
+                        }
+                    }
                 }
             }
-        }
-    }else if(event.keyCode === 68 ){ //D   
-        for(let i = 0;i<matriz.length;i++){
-            for(let j = 0;j<matriz[i].length;j++){
-                if(j-1>=0 && (matriz[i][j] == matriz[i][j-1] || matriz[i][j] == 0)){
-                    matriz[i][j] += matriz[i][j-1];
-                    matriz[i][j-1] = 0;
+        }else if(event.keyCode === 68 ){ //D   key
+            for(let c = 0;c<matriz.length;c++){     //Inneficient code, this should be improved 
+                for(let i = 0;i<matriz.length;i++){
+                    for(let j = 0;j<matriz[i].length;j++){
+                        if(j-1>=0 && (matriz[i][j] == matriz[i][j-1] || matriz[i][j] == 0)){
+                            matriz[i][j] += matriz[i][j-1];
+                            matriz[i][j-1] = 0;
+                            if(matriz[i][j] >= 2048){
+                                exit = true;
+                            }
+                        }
+                    }
                 }
             }
-        }
-    }else if(event.keyCode === 65 ){ //A  necesita arreglo
-        for(let i = 0;i<matriz.length;i++){
-            for(let j = 0;j<matriz[i].length;j++){
-                if(j+1<matriz.length && (matriz[i][j]==matriz[i][j+1] || matriz[i][j] == 0)){
-                    matriz[i][j] += matriz[i][j+1];
-                    matriz[i][j+1] = 0;
+        }else if(event.keyCode === 65 ){ //A  key
+            for(let c = 0;c<matriz.length;c++){
+                for(let i = 0;i<matriz.length;i++){
+                    for(let j = 0;j<matriz[i].length;j++){
+                        if(j+1<matriz.length && (matriz[i][j]==matriz[i][j+1] || matriz[i][j] == 0)){
+                            matriz[i][j] += matriz[i][j+1];
+                            matriz[i][j+1] = 0;
+                            if(matriz[i][j] >= 2048){
+                                exit = true;
+                            }
+                        }
+                    }
                 }
             }
+        }else{
+            console.log("Tecal incorrecta"); //incorect key pressed
         }
-    }else{
-        console.log("Tecal incorrecta");
+        if(exit){
+            alert("WELL DONE, YOU WIN !!!");
+        }
     }
 }
 
  
-// Asignar el evento a la ventana
+// Asignar el evento a la ventana    Asign the event to a specific function
 window.addEventListener("keydown", comprobarLaterales);
-window.addEventListener("keyup",crearMatriz);
+window.addEventListener("keyup",generarCelda);
 window.addEventListener("keyup",representar);
